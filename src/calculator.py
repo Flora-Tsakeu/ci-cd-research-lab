@@ -49,3 +49,4 @@ class ScientificCalculator:
 
     def clear_history(self):
         self.history.clear()
+        

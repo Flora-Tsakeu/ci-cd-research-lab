@@ -4,9 +4,9 @@ Suite de tests unitaires pour ScientificCalculator.
 Chaque test = un contrat que notre code doit respecter.
 """
 
-import pytest
 import sys
 import os
+import pytest
 
 # Permet d'importer depuis src/
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
