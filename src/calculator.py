@@ -6,7 +6,7 @@ Version : 1.0.0
 """
 
 import math
-import numpy as np   # ← numpy n'est pas dans requirements.txt !
+
 
 
 class ScientificCalculator:

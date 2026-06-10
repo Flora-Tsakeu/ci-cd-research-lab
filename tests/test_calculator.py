@@ -27,7 +27,7 @@ def calc():
 class TestBasicOperations:
 
     def test_addition(self, calc):
-        assert calc.add(2, 3) == 99   # ← 5 ≠ 99 : échec garanti
+        assert calc.add(2, 3) == 5
 
     def test_addition_negative(self, calc):
         assert calc.add(-1, -1) == -2
