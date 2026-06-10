@@ -24,6 +24,7 @@ class ScientificCalculator:
 
     def add(self, a: float, b: float) -> float:
         return self._record(f"{a} + {b}", a + b)
+        this is not python syntax  
 
     def subtract(self, a: float, b: float) -> float:
         return self._record(f"{a} - {b}", a - b)
