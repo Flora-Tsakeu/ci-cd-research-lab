@@ -1,0 +1,91 @@
+# .github/workflows/failure-experiments.yml
+# ══════════════════════════════════════════════════════════════
+# PIPELINE D'EXPÉRIMENTATION — MODULE 3
+# Ce workflow est volontairement conçu pour échouer.
+# Objectif : comprendre les mécanismes d'échec et de récupération.
+# ══════════════════════════════════════════════════════════════
+
+name: "Failure Experiments - Module 3"
+
+on:
+  push:
+    branches:
+      - "experiment/*"   # Déclenché UNIQUEMENT sur les branches experiment/
+  workflow_dispatch:      # Permet aussi le déclenchement manuel (bouton)
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+
+  # ── JOB PRINCIPAL : EXPÉRIENCES D'ÉCHEC ─────────────────────
+  failure-lab:
+    name: "Laboratoire d'Échecs"
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: "Checkout du code"
+        uses: actions/checkout@v4
+
+      - name: "Setup Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: "Installation des dépendances"
+        run: |
+          pip install -r requirements.txt
+
+      - name: "Exécution des tests (avec rapport détaillé)"
+        run: |
+          pytest tests/ \
+            --verbose \
+            --tb=long \
+            --no-header \
+            -rA
+
+      # ── CE STEP S'EXÉCUTE SEULEMENT EN CAS D'ÉCHEC ──────────
+      - name: "Rapport d'échec automatique"
+        if: failure()
+        run: |
+          echo "════════════════════════════════════════"
+          echo "   DIAGNOSTIC AUTOMATIQUE D'ÉCHEC"
+          echo "════════════════════════════════════════"
+          echo "Timestamp     : $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+          echo "Commit SHA    : ${{ github.sha }}"
+          echo "Branche       : ${{ github.ref_name }}"
+          echo "Acteur        : ${{ github.actor }}"
+          echo ""
+          echo "── État du répertoire de travail ──"
+          ls -la
+          echo ""
+          echo "── Version Python ──"
+          python --version
+          echo ""
+          echo "── Packages installés ──"
+          pip list
+
+      # ── CE STEP S'EXÉCUTE TOUJOURS (succès ET échec) ────────
+      - name: "Résumé final (toujours exécuté)"
+        if: always()
+        run: |
+          echo "════════════════════════════════════════"
+          echo "   RÉSUMÉ DE L'EXÉCUTION"
+          echo "════════════════════════════════════════"
+          echo "Ce step s'exécute TOUJOURS grâce à : if: always()"
+          echo "Il sert à nettoyer, notifier, ou archiver."
+          echo "Job status : ${{ job.status }}"
+
+  # ── JOB DÉPENDANT : observe la cascade ──────────────────────
+  downstream-job:
+    name: "⛓️ Job Dépendant (cascade)"
+    runs-on: ubuntu-latest
+    needs: failure-lab      # Dépend du job ci-dessus
+
+    steps:
+      - name: "Ce job ne tourne que si failure-lab réussit"
+        run: |
+          echo "Si tu vois ce message, failure-lab a réussi."
+          echo "Sinon, ce job est marqué 'skipped'."
