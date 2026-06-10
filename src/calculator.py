@@ -6,6 +6,7 @@ Version : 1.0.0
 """
 
 import math
+import numpy as np   # ← numpy n'est pas dans requirements.txt !
 
 
 class ScientificCalculator:
@@ -24,7 +25,6 @@ class ScientificCalculator:
 
     def add(self, a: float, b: float) -> float:
         return self._record(f"{a} + {b}", a + b)
-        this is not python syntax  
 
     def subtract(self, a: float, b: float) -> float:
         return self._record(f"{a} - {b}", a - b)
