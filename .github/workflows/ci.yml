@@ -190,3 +190,49 @@ jobs:
           name: "runner-metrics"
           path: metrics/runner_metrics.csv
           retention-days: 30
+
+      - name: " Métadonnées du contexte d'exécution"
+        run: |
+          echo "════════════════════════════════════════════"
+          echo "        CONTEXTE COMPLET DU RUNNER"
+          echo "════════════════════════════════════════════"
+          echo ""
+          echo "── IDENTITÉ DU RUN ──"
+          echo "Run ID        : ${{ github.run_id }}"
+          echo "Run number    : ${{ github.run_number }}"
+          echo "Run attempt   : ${{ github.run_attempt }}"
+          echo "Workflow      : ${{ github.workflow }}"
+          echo ""
+          echo "── DÉCLENCHEUR ──"
+          echo "Event         : ${{ github.event_name }}"
+          echo "Acteur        : ${{ github.actor }}"
+          echo "Branche       : ${{ github.ref_name }}"
+          echo "SHA du commit : ${{ github.sha }}"
+          echo ""
+          echo "── ENVIRONNEMENT ──"
+          echo "Runner OS     : ${{ runner.os }}"
+          echo "Runner arch   : ${{ runner.arch }}"
+          echo "Workspace     : ${{ github.workspace }}"
+          echo ""
+          echo "── TIMESTAMPS SYSTÈME ──"
+          echo "Heure runner  : $(date -u '+%Y-%m-%dT%H:%M:%S.%NZ')"
+          echo "Uptime runner : $(uptime -p)"
+          echo ""
+          echo "── VARIABLES D'ENVIRONNEMENT CI ──"
+          env | grep -E "^(GITHUB_|RUNNER_|CI)" | sort
+
+      - name: " Démonstration stdout vs stderr"
+        run: |
+          echo "── Test flux stdout (normal) ──"
+          echo "Ceci est sur stdout : visible en blanc"
+
+          echo "── Test flux stderr (erreur) ──"
+          echo "Ceci simule stderr : visible en rouge" >&2
+
+          python3 -c "
+          import sys
+          print('Python → stdout : calcul OK')
+          print('Python → stderr : avertissement mémoire', file=sys.stderr)
+          sys.exit(0)  # exit 0 = succès malgré le message stderr
+          "
+          echo "── Le step continue car exit code = 0 ──"
